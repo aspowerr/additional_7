@@ -1,299 +1,272 @@
-module.exports = function solveSudoku(matrix) {let i = 0;
-  let j = 0; //столбец
-  let mass_x = [];
-  let mass_y = [];
-  
-    for (i=0; i<9; i++)
-    {
-      for(j=0; j<9; j++)
-      {
-        if (matrix[i][j] == 0) {
-          
-          for(let q=0; q<9; q++)
-          {
-          mass_x[q] = matrix[i][q];
+module.exports = function solveSudoku(matrix) {
+  Sudoku = function(matrix) {
+      var solved = [];
+      var first = 0;
+
+      init(matrix);
+      solve();
+
+      function init(matrix) {
+          first = 0;
+          var number = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+          for ( var i=0; i<9; i++) {
+              solved[i] = [];
+              for ( var j=0; j<9; j++ ) {
+                  if ( matrix[i][j] ) {
+                      solved[i][j] = [matrix[i][j], 'in', []];
+                  }
+                  else {
+                      solved[i][j] = [0, 'undefined', number];
+                  }
+              }
           }
-  
-          
-          
-          for(let q=0, w = 0; q<9, w<9; q++, w++)
-          {
-          mass_y[q] = matrix[w][j];
+      };
+
+      function changeSuggests() {
+          var changed = 0;
+          var buf = arrayDec(solved[1][3][2], rowContent(1));
+          buf = arrayDec(buf, colContent(3));
+          buf = arrayDec(buf, sectContent(1, 3));
+          for ( var i=0; i<9; i++) {
+              for ( var j=0; j<9; j++) {
+                  if ( 'undefined' != solved[i][j][1] ) {
+                      continue;
+                  }
+
+                  changed += solveSingle(i, j);
+
+                  changed += solveHiddenSingle(i, j);
+              }
           }
-  
-          let mass_kv = [];
-          let m = 0;
-  
-           if((i==0 || i==1 || i==2) && (j==0 || j==1 || j==2))
-           {
-             mass_kv[m]=matrix[0][0];
-             m++;
-             mass_kv[m]=matrix[0][1];
-             m++;
-             mass_kv[m]=matrix[0][2];
-             m++;
-             mass_kv[m]=matrix[1][0];
-             m++;
-             mass_kv[m]=matrix[1][1];
-             m++;
-             mass_kv[m]=matrix[1][2];
-             m++;
-             mass_kv[m]=matrix[2][0];
-             m++;
-             mass_kv[m]=matrix[2][1];
-             m++;
-             mass_kv[m]=matrix[2][2];
-             m++;
-           }
-           if((i==0 || i==1 || i==2) && (j==3 || j==4 || j==5))
-           {
-             mass_kv[m]=matrix[0][3];
-             m++;
-             mass_kv[m]=matrix[0][4];
-             m++;
-             mass_kv[m]=matrix[0][5];
-             m++;
-             mass_kv[m]=matrix[1][3];
-             m++;
-             mass_kv[m]=matrix[1][4];
-             m++;
-             mass_kv[m]=matrix[1][5];
-             m++;
-             mass_kv[m]=matrix[2][3];
-             m++;
-             mass_kv[m]=matrix[2][4];
-             m++;
-             mass_kv[m]=matrix[2][5];
-             m++;
-           }
-           if((i==0 || i==1 || i==2) && (j==6 || j==7 || j==8))
-           {
-             mass_kv[m]=matrix[0][6];
-             m++;
-             mass_kv[m]=matrix[0][7];
-             m++;
-             mass_kv[m]=matrix[0][8];
-             m++;
-             mass_kv[m]=matrix[1][6];
-             m++;
-             mass_kv[m]=matrix[1][7];
-             m++;
-             mass_kv[m]=matrix[1][8];
-             m++;
-             mass_kv[m]=matrix[2][6];
-             m++;
-             mass_kv[m]=matrix[2][7];
-             m++;
-             mass_kv[m]=matrix[2][8];
-             m++;
-           }
-           if((i==3 || i==4 || i==5) && (j==0 || j==1 || j==2))
-           {
-             mass_kv[m]=matrix[3][0];
-             m++;
-             mass_kv[m]=matrix[3][1];
-             m++;
-             mass_kv[m]=matrix[3][2];
-             m++;
-             mass_kv[m]=matrix[4][0];
-             m++;
-             mass_kv[m]=matrix[4][1];
-             m++;
-             mass_kv[m]=matrix[4][2];
-             m++;
-             mass_kv[m]=matrix[5][0];
-             m++;
-             mass_kv[m]=matrix[5][1];
-             m++;
-             mass_kv[m]=matrix[5][2];
-             m++;
-           }
-           if((i==3 || i==4 || i==5) && (j==3 || j==4 || j==5))
-           {
-             mass_kv[m]=matrix[3][3];
-             m++;
-             mass_kv[m]=matrix[3][4];
-             m++;
-             mass_kv[m]=matrix[3][5];
-             m++;
-             mass_kv[m]=matrix[4][3];
-             m++;
-             mass_kv[m]=matrix[4][4];
-             m++;
-             mass_kv[m]=matrix[4][5];
-             m++;
-             mass_kv[m]=matrix[5][3];
-             m++;
-             mass_kv[m]=matrix[5][4];
-             m++;
-             mass_kv[m]=matrix[2][5];
-             m++;
-           }
-           if((i==3 || i==4 || i==5) && (j==6 || j==7 || j==8))
-           {
-             mass_kv[m]=matrix[3][6];
-             m++;
-             mass_kv[m]=matrix[3][7];
-             m++;
-             mass_kv[m]=matrix[3][8];
-             m++;
-             mass_kv[m]=matrix[4][6];
-             m++;
-             mass_kv[m]=matrix[4][7];
-             m++;
-             mass_kv[m]=matrix[4][8];
-             m++;
-             mass_kv[m]=matrix[5][6];
-             m++;
-             mass_kv[m]=matrix[5][7];
-             m++;
-             mass_kv[m]=matrix[5][8];
-             m++;
-           }
-           if((i==6 || i==7 || i==8) && (j==0 || j==1 || j==2))
-           {
-             mass_kv[m]=matrix[6][0];
-             m++;
-             mass_kv[m]=matrix[6][1];
-             m++;
-             mass_kv[m]=matrix[6][2];
-             m++;
-             mass_kv[m]=matrix[7][0];
-             m++;
-             mass_kv[m]=matrix[7][1];
-             m++;
-             mass_kv[m]=matrix[7][2];
-             m++;
-             mass_kv[m]=matrix[8][0];
-             m++;
-             mass_kv[m]=matrix[8][1];
-             m++;
-             mass_kv[m]=matrix[8][2];
-             m++;
-           }
-           if((i==6 || i==7 || i==8) && (j==3 || j==4 || j==5))
-           {
-             mass_kv[m]=matrix[6][3];
-             m++;
-             mass_kv[m]=matrix[6][4];
-             m++;
-             mass_kv[m]=matrix[6][5];
-             m++;
-             mass_kv[m]=matrix[7][3];
-             m++;
-             mass_kv[m]=matrix[7][4];
-             m++;
-             mass_kv[m]=matrix[7][5];
-             m++;
-             mass_kv[m]=matrix[8][3];
-             m++;
-             mass_kv[m]=matrix[8][4];
-             m++;
-             mass_kv[m]=matrix[8][5];
-             m++;
-           }
-           if((i==6 || i==7 || i==8) && (j==6 || j==7 || j==8))
-           {
-             mass_kv[m]=matrix[6][6];
-             m++;
-             mass_kv[m]=matrix[6][7];
-             m++;
-             mass_kv[m]=matrix[6][8];
-             m++;
-             mass_kv[m]=matrix[7][6];
-             m++;
-             mass_kv[m]=matrix[7][7];
-             m++;
-             mass_kv[m]=matrix[7][8];
-             m++;
-             mass_kv[m]=matrix[8][6];
-             m++;
-             mass_kv[m]=matrix[8][7];
-             m++;
-             mass_kv[m]=matrix[8][8];
-             m++;
-           }
-            let q=0, k = 0;
-            let no_mass_x = [];
-            let qq = 0;
-            for(let number = 1; number < 10; number ++)
-            { 
-            for(q=0;q<9;q++)
-                { k = 0;
-                
-                if(mass_x[q] == number)
-                {
-                    k=1;
-                    break;
-                }
-            }
-             if(k==0){
-                    no_mass_x[qq] = number;
-                    qq++;
-                }
-             }
-            
-            q=0;
-            let no_mass_y = []; 
-            qq = 0;
-            
-            for(let number = 1; number < 10; number ++)
-            { 
-            for(q=0;q<9;q++)
-            {  k = 0;
-                
-                if(mass_y[q] == number)
-                {
-                    k=1; 
-                    break;
-                }
-               
-            } if(k==0){
-                    no_mass_y[qq] = number;
-                    qq++;
-                }
-             }
-            
-            
-            let no_mass_kv = [];
-            qq=0;
-            
-            for(let number = 1; number < 10; number ++)
-            { 
-            for(m=0;m<9;m++)
-            {  k = 0;
-                
-                if(mass_kv[m]== number)
-                {
-                    k=1; 
-                    break;
-                }
-               
-            } if(k==0){
-                    no_mass_kv[qq] = number;
-                    qq++;
-                }
-             }
-            
-            for(q=0;q<no_mass_x.length;q++)
-            {
-                for(qq=0;qq<no_mass_y.length;qq++)
-                {
-                    for(m=0;m<no_mass_kv.length;m++)
-                    {
-            if(no_mass_x [q] == no_mass_y[qq] && no_mass_y[qq] == no_mass_kv[m])
-            {
-                matrix[i][j] = no_mass_x[q];
-            }
-                    }
-                }
-            }
-  
-        }
-  
-      }
-    }
-  
-      
-  return(matrix);
-}
+          return changed;
+      };
+
+
+      function solveSingle(i, j) {
+          solved[i][j][2] = arrayDec(solved[i][j][2], rowContent(i));
+          solved[i][j][2] = arrayDec(solved[i][j][2], colContent(j));
+          solved[i][j][2] = arrayDec(solved[i][j][2], sectContent(i, j));
+          if ( 1 == solved[i][j][2].length ) {
+
+              marking(i, j, solved[i][j][2][0]);
+              return 1;
+          }
+          return 0;
+      };
+
+
+      function solveHiddenSingle(i, j) {
+          var less_suggest = lessRowSuggest(i, j);
+          var changed = 0;
+          if ( 1 == less_suggest.length ) {
+              marking(i, j, less_suggest[0]);
+              changed++;
+          }
+          var less_suggest = lessColSuggest(i, j);
+          if ( 1 == less_suggest.length ) {
+              marking(i, j, less_suggest[0]);
+              changed++;
+          }
+          var less_suggest = lessSectSuggest(i, j);
+          if ( 1 == less_suggest.length ) {
+              marking(i, j, less_suggest[0]);
+              changed++;
+          }
+          return changed;
+      };
+
+
+      function marking(i, j, solve) {
+          solved[i][j][0] = solve;
+          solved[i][j][1] = 'solved';
+      };
+
+
+      function rowContent(i) {
+          var content = [];
+          for ( var j=0; j<9; j++ ) {
+              if ( 'undefined' != solved[i][j][1] ) {
+                  content[content.length] = solved[i][j][0];
+              }
+          }
+          return content;
+      };
+
+
+      function colContent(j) {
+          var content = [];
+          for ( var i=0; i<9; i++ ) {
+              if ( 'undefined' != solved[i][j][1] ) {
+                  content[content.length] = solved[i][j][0];
+              }
+          }
+          return content;
+      };
+
+
+      function sectContent(i, j) {
+          var content = [];
+          var offset = sectOffset(i, j);
+          for ( var k=0; k<3; k++ ) {
+              for ( var l=0; l<3; l++ ) {
+                  if ( 'undefined' != solved[offset.i+k][offset.j+l][1] ) {
+                      content[content.length] = solved[offset.i+k][offset.j+l][0];
+                  }
+              }
+          }
+          return content;
+      };
+
+
+      function lessRowSuggest(i, j) {
+          var less_suggest = solved[i][j][2];
+          for ( var k=0; k<9; k++ ) {
+              if ( k == j || 'undefined' != solved[i][k][1] ) {
+                  continue;
+              }
+              less_suggest = arrayDec(less_suggest, solved[i][k][2]);
+          }
+          return less_suggest;
+      };
+
+
+      function lessColSuggest(i, j) {
+          var less_suggest = solved[i][j][2];
+          for ( var k=0; k<9; k++ ) {
+              if ( k == i || 'undefined' != solved[k][j][1] ) {
+                  continue;
+              }
+              less_suggest = arrayDec(less_suggest, solved[k][j][2]);
+          }
+          return less_suggest;
+      };
+
+
+      function lessSectSuggest(i, j) {
+          var less_suggest = solved[i][j][2];
+          var offset = sectOffset(i, j);
+          for ( var k=0; k<3; k++ ) {
+              for ( var l=0; l<3; l++ ) {
+                  if ( ((offset.i+k) == i  && (offset.j+l) == j)|| 'undefined' != solved[offset.i+k][offset.j+l][1] ) {
+                      continue;
+                  }
+                  less_suggest = arrayDec(less_suggest, solved[offset.i+k][offset.j+l][2]);
+              }
+          }
+          return less_suggest;
+      };
+
+
+      function arrayDec (ar1, ar2) {
+          var arr_dec = [];
+          for ( var i=0; i<ar1.length; i++ ) {
+              var is_found = false;
+              for ( var j=0; j<ar2.length; j++ ) {
+                  if ( ar1[i] == ar2[j] ) {
+                      is_found = true;
+                      break;
+                  }
+              }
+              if ( !is_found ) {
+                  arr_dec[arr_dec.length] = ar1[i];
+              }
+          }
+          return arr_dec;
+      };
+
+      function sectOffset(i, j) {
+          return {
+              j: Math.floor(j/3)*3,
+              i: Math.floor(i/3)*3
+          };
+      };
+
+      function theSolved() {
+          var theSolved = true;
+          for ( var i=0; i<9; i++) {
+              for ( var j=0; j<9; j++ ) {
+                  if ( 'undefined' == solved[i][j][1] ) {
+                      theSolved = false;
+                  }
+              }
+          }
+          return theSolved;
+      };
+
+
+      this.theSolved = function() {
+          return theSolved();
+      };
+
+
+      function isFailed() {
+          var is_failed = false;
+          for ( var i=0; i<9; i++) {
+              for ( var j=0; j<9; j++ ) {
+                  if ( 'undefined' == solved[i][j][1] && !solved[i][j][2].length ) {
+                      is_failed = true;
+                  }
+              }
+          }
+          return is_failed;
+      };
+
+      function solve() {
+          var changed = 0;
+          do {
+              changed = changeSuggests();
+              first++;
+              if ( 81 < first ) {
+                  break;
+              }
+          } while (changed);
+
+          if ( !theSolved() && !isFailed() ) {
+              backtracking();
+          }
+      };
+      function backtracking() {
+          var matrix = [[], [], [], [], [], [], [], [], []];
+          var i_min=-1, j_min=-1, suggests_cnt=0;
+          for ( var i=0; i<9; i++ ) {
+              matrix[i].length = 9;
+              for ( var j=0; j<9; j++ ) {
+                  matrix[i][j] = solved[i][j][0];
+                  if ( 'undefined' == solved[i][j][1] && (solved[i][j][2].length < suggests_cnt || !suggests_cnt) ) {
+                      suggests_cnt = solved[i][j][2].length;
+                      i_min = i;
+                      j_min = j;
+                  }
+              }
+          }
+
+
+          for ( var k=0; k<suggests_cnt; k++ ) {
+              matrix[i_min][j_min] = solved[i_min][j_min][2][k];
+
+              var sudoku = new Sudoku(matrix);
+              if ( sudoku.theSolved() ) {
+
+                  out_val = sudoku.solved();
+
+                  for ( var i=0; i<9; i++ ) {
+                      for ( var j=0; j<9; j++ ) {
+                          if ( 'undefined' == solved[i][j][1] ) {
+                              marking(i, j, out_val[i][j][0])
+                          }
+                      }
+                  }
+                  return;
+              }
+          }
+      };
+
+
+      this.solved = function() {
+          return solved;
+      };
+  };
+
+  return new Sudoku(matrix).solved()
+      .map(row => row.map(cell => cell[0]));
+};
